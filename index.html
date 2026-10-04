@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 7 - Katharinas HTML-Editor</title>
+  <style>
+    :root {
+      /* Edles, tiefes Darkblau Theme */
+      --bg-dark: #070a12;
+      --card-bg: #0f172a;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--card-bg);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: #040814;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+      color: #fff;
+    }
+
+    button.secondary {
+      background-color: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    /* Hauptbereich Split View */
+    main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      height: calc(100vh - 95px);
+    }
+
+    @media (min-width: 768px) {
+      main {
+        flex-direction: row;
+      }
+    }
+
+    .pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      .pane {
+        border-bottom: none;
+        border-right: 1px solid var(--border);
+      }
+    }
+
+    .pane-title {
+      background: var(--card-bg);
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    textarea {
+      flex: 1;
+      background-color: var(--bg-dark);
+      color: #e2e8f0;
+      border: none;
+      padding: 12px;
+      font-family: "Fira Code", Monaco, Consolas, "Courier New", monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+    }
+
+    iframe {
+      flex: 1;
+      background-color: #ffffff;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Dezenter Footer */
+    footer {
+      background-color: var(--card-bg);
+      padding: 6px 16px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: var(--accent);
+    }
+
+    /* Modal Pop-up für Impressum & Datenschutz */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 550px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+
+    .modal-body h3 {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    .modal-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .close-btn {
+      background-color: var(--border);
+      color: var(--text-main);
+    }
+
+    .close-btn:hover {
+      background-color: var(--accent);
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-title">Phase 7</div>
+    <div class="btn-group">
+      <button class="secondary" onclick="openFile()">Öffnen</button>
+      <button onclick="saveFile()">Speichern</button>
+    </div>
+  </header>
+
+  <!-- Hauptbereich -->
+  <main>
+    <!-- Code Editor -->
+    <div class="pane">
+      <div class="pane-title">Code</div>
+      <textarea id="code" placeholder="Hier HTML, CSS oder JS eingeben..." oninput="updatePreview()"><!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 24px;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 { color: #0284c7; margin-top: 0; font-size: 1.4rem; }
+    p { line-height: 1.5; color: #334155; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Guten Morgen, Katharina! 👋</h1>
+    <p>Willkommen in deinem persönlichen HTML-Editor <strong>Phase 7</strong>.</p>
+    <p>Tippe einfach deinen Code auf der linken Seite ein – deine Live-Vorschau ist sofort bereit!</p>
+  </div>
+</body>
+</html></textarea>
+    </div>
+
+    <!-- Vorschaufenster (Canvas) -->
+    <div class="pane">
+      <div class="pane-title">Vorschau (Canvas)</div>
+      <iframe id="preview"></iframe>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <a href="#" onclick="toggleModal(true); return false;">Impressum & Datenschutz</a>
+  </footer>
+
+  <!-- Pop-up Fenster (Modal) -->
+  <div class="modal-overlay" id="legalModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Impressum & Datenschutz</h2>
+        <button class="close-btn" onclick="toggleModal(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <h3>Urheberrecht & Eigentum</h3>
+        <p>
+          Diese Anwendung (<strong>Phase 7 – Katharinas HTML-Editor</strong>) ist die persönliche Anwendung von <strong>Katharina Schütz</strong>.
+        </p>
+        <p>
+          Der Quellcode und die Gestaltung dieser Anwendung sind urheberrechtlich geschützt. Sie darf ohne meine ausdrückliche schriftliche Erlaubnis nicht vervielfältigt, verändert, weitergegeben oder anderweitig von Dritten genutzt werden.
+        </p>
+
+        <h3>Datenschutz & Privatsphäre</h3>
+        <p>
+          Diese Anwendung arbeitet zu 100 % lokal in deinem Browser. 
+        </p>
+        <ul>
+          <li><strong>Keine Cookies:</strong> Es werden keinerlei Cookies gesetzt oder ausgelesen.</li>
+          <li><strong>Kein Tracking:</strong> Es finden keine Analyse-Tools, kein Tracking und keine Protokollierungen deines Nutzerverhaltens statt.</li>
+          <li><strong>Keine Datenübertragung:</strong> Deine eingegebenen HTML-Inhalte, Texte und abgespeicherten Dateien verbleiben ausschließlich lokal auf deinem eigenen Gerät. Es werden keine Daten an externe Server gesendet.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="close-btn" onclick="toggleModal(false)">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let fileHandle = null;
+
+    // Live-Vorschau aktualisieren
+    function updatePreview() {
+      const code = document.getElementById('code').value;
+      const preview = document.getElementById('preview');
+      preview.srcdoc = code;
+    }
+
+    // Modal / Pop-up Steuerung
+    function toggleModal(show) {
+      document.getElementById('legalModal').style.display = show ? 'flex' : 'none';
+    }
+
+    // Datei speichern
+    async function saveFile() {
+      const content = document.getElementById('code').value;
+
+      if ('showSaveFilePicker' in window) {
+        try {
+          if (!fileHandle) {
+            fileHandle = await window.showSaveFilePicker({
+              suggestedName: 'index.html',
+              types: [{
+                description: 'HTML Dokument',
+                accept: { 'text/html': ['.html', '.htm'] },
+              }],
+            });
+          }
+          const writable = await fileHandle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          alert('Erfolgreich gespeichert!');
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.error(err);
+            fallbackDownload(content);
+          }
+        }
+      } else {
+        fallbackDownload(content);
+      }
+    }
+
+    function fallbackDownload(content) {
+      const blob = new Blob([content], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'meine_app.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // Datei öffnen
+    async function openFile() {
+      if ('showOpenFilePicker' in window) {
+        try {
+          [fileHandle] = await window.showOpenFilePicker({
+            types: [{
+              description: 'HTML Dokument',
+              accept: { 'text/html': ['.html', '.htm'] },
+            }],
+          });
+          const file = await fileHandle.getFile();
+          const content = await file.text();
+          document.getElementById('code').value = content;
+          updatePreview();
+        } catch (err) {
+          console.error(err);
+        }
+      } else {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.html,.htm';
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const content = await file.text();
+            document.getElementById('code').value = content;
+            updatePreview();
+          }
+        };
+        input.click();
+      }
+    }
+
+    // Initialisierung beim Start
+    updatePreview();
+  </script>
+</body>
+</html>
